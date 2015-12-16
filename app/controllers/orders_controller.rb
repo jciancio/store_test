@@ -11,6 +11,13 @@ class OrdersController < ApplicationController
     end
   end
 
+  # Doesn't actually process payment, just redirects to confrimation page
+  def payment
+    if request.post?
+      redirect_to checkout_confirmation_path
+    end
+  end
+
   def destroy
     current_order.destroy
     session[:order_id] = nil
