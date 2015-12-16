@@ -18,6 +18,14 @@ class OrdersController < ApplicationController
     end
   end
 
+  def confirmation
+    if request.post?
+      current_order.confirm!
+      session[:order_id] = nil
+      redirect_to root_path, :notice => "Order has been placed successfully!"
+    end
+  end
+
   def destroy
     current_order.destroy
     session[:order_id] = nil
