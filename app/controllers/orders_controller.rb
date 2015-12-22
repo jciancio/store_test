@@ -11,18 +11,22 @@ class OrdersController < ApplicationController
     end
   end
 
-  # Doesn't actually process payment, just redirects to confrimation page
-  def payment
-    if request.post?
-      redirect_to checkout_confirmation_path
-    end
-  end
-
   def confirmation
     if request.post?
       current_order.confirm!
       session[:order_id] = nil
       redirect_to root_path, :notice => "Order has been placed successfully!"
+    end
+  end
+
+  def payment
+    @order = Shoppe::Order.find(session[:current_order_id])
+    if request.post?
+      if @order.accept_stripe_token(params[:stripe_token])
+        redirect_to checkout_confirmation_path
+      else
+        flash.now[:notice] = "Could not exchange Stripe token. Please try again."
+      end
     end
   end
 
